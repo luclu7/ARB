@@ -23,7 +23,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func handlerBuild(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	pkgName := vars["package"]
-	db.Create(&pkg{Name: pkgName, buildStatus: false})
+	db.Create(pkg{Name: pkgName, buildStatus: false})
 	id := 1
 	buildPackage(pkgName, id)
 	fmt.Fprintf(w, "Your package is building! Please recheck later.")
