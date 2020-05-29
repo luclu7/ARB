@@ -1,4 +1,4 @@
-module github.com/Luclu7/ARB/docker
+module github.com/luclu7/ARB/docker
 
 go 1.14
 

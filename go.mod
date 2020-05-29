@@ -1,4 +1,4 @@
-module github.com/Luclu7/ARB
+module github.com/luclu7/ARB
 
 go 1.14
 
