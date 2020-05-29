@@ -18,6 +18,7 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	docker.GetValue()
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
 	r.HandleFunc("/build/{package}", handlerBuild)
