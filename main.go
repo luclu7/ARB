@@ -3,22 +3,26 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	docker "github.com/luclu7/ARB/docker"
 	"net/http"
 )
+
+type pkg struct {
+	name        string
+	buildStatus string
+}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hey, it works !")
 }
 
 func handlerBuild(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(request)
+	vars := mux.Vars(r)
 	pkg := vars["package"]
-	docker.buildPackage(pkg)
+	buildPackage(pkg)
+	fmt.Fprintf(w, "Your package is building! Please recheck later.")
 }
 
 func main() {
-	docker.GetValue()
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
 	r.HandleFunc("/build/{package}", handlerBuild)
