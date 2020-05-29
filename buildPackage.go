@@ -19,7 +19,7 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func buildPackage(packageName string) {
+func buildPackage(packageName string, id int) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -34,10 +34,11 @@ func buildPackage(packageName string) {
 	}
 	io.Copy(os.Stdout, out)
 
-	var command strslice.StrSlice
-	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName+""))
-
 	sourceFolder := getEnv("HOST_FOLDER", "/home/luclu7")
+	server := getEnv("MAIN_HOST", "localhost")
+
+	var command strslice.StrSlice
+	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName+"; curl "+server))
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: imageName,
