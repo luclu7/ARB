@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/strslice"
 	"github.com/docker/docker/client"
-	"io"
-	"os"
 )
 
 func getEnv(key, fallback string) string {
@@ -19,7 +20,7 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func buildPackage(packageName string, id int) {
+func buildPackage(packageName string) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -38,7 +39,7 @@ func buildPackage(packageName string, id int) {
 	server := getEnv("MAIN_HOST", "localhost")
 
 	var command strslice.StrSlice
-	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName+"; curl "+server))
+	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName+"; curl "+server+"/build/complete/mark/"+packageName))
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: imageName,
