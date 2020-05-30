@@ -1,26 +1,31 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 )
 
-type pkg struct {
+/*type pkg struct {
 	ID          int
 	Name        string `gorm:"size:255"`
-	BuildStatus int    `gorm:"type:int"`
-}
+	Status int    `gorm:"type:int"`
+} */
 
-type Build struct {
+type pkg struct {
 	ID     int
 	Name   string
 	Status int
 	URL    string
+}
+
+type requestResponse struct {
+	Type int
+	Text string
 }
 
 var db *gorm.DB
@@ -31,37 +36,84 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func handlerBuild(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	pkgName := vars["package"]
+	name := vars["package"]
 	var currentPkg pkg
 	db.First(&currentPkg)
-	if !db.Debug().First(&currentPkg, "Name = ?", pkgName).RecordNotFound() {
-		log.Println("Package", pkgName, "is already being built.")
-		fmt.Fprintf(w, "Your package was already built.\n")
-
+	if !db.Debug().First(&currentPkg, "Name = ?", name).RecordNotFound() {
+		fmt.Println("pkg: ", currentPkg)
+		if currentPkg.Status == 0 {
+			log.Println("Package", name, "is already being built.")
+			a, err := json.Marshal(requestResponse{Type: 200, Text: "Your package is already being built!"}) //get json byte array
+			if err != nil {
+				log.Panic(err)
+			}
+			n := len(a)        //Find the length of the byte array
+			s := string(a[:n]) //convert to string
+			fmt.Fprint(w, s)
+		} else {
+			a, err := json.Marshal(requestResponse{Type: 200, Text: "Your package is being built!"}) //get json byte array
+			if err != nil {
+				log.Panic(err)
+			}
+			n := len(a)        //Find the length of the byte array
+			s := string(a[:n]) //convert to string
+			fmt.Fprint(w, s)
+			go buildPackage(name)
+			db.Create(&pkg{Name: name, Status: 0})
+		}
 	} else {
-
-		buildPackage(pkgName)
-		db.Create(&pkg{Name: pkgName, BuildStatus: 0})
-		fmt.Fprintf(w, "Your package is building! Please recheck later.\n")
+		a, err := json.Marshal(requestResponse{Type: 200, Text: "Your package is being built!"}) //get json byte array
+		if err != nil {
+			log.Panic(err)
+		}
+		n := len(a)        //Find the length of the byte array
+		s := string(a[:n]) //convert to string
+		fmt.Fprint(w, s)
+		go buildPackage(name)
+		db.Create(&pkg{Name: name, Status: 0})
 	}
 }
 
 func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["name"]
+	name := vars["name"]
 	var currentPkg pkg
-	db.First(&currentPkg)
-	db.Model(&currentPkg).Update("BuildStatus", 1)
-	log.Println("/build/complete/mark/" + id)
+	db.Debug().First(&currentPkg, "Name = ?", name)
+	db.Debug().Model(&currentPkg).Update("Status", 1)
+	log.Println("/build/complete/mark/" + name)
+
+	a, err := json.Marshal(requestResponse{Type: 200, Text: "Package was successfully marked as built."}) //get json byte array
+	if err != nil {
+		log.Panic(err)
+	}
+	n := len(a)        //Find the length of the byte array
+	s := string(a[:n]) //convert to string
+	fmt.Fprint(w, s)
 }
 
 func handlerCheckIfBuildFinished(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
 	var currentPkg pkg
-	db.Debug().First(&currentPkg, "Name = ?", name)
-	fmt.Fprintf(w, "status: "+strconv.Itoa(currentPkg.BuildStatus))
-	fmt.Println(currentPkg)
+	if !db.Debug().First(&currentPkg, "Name = ?", name).RecordNotFound() {
+
+		a, err := json.Marshal(currentPkg) //get json byte array
+		if err != nil {
+			log.Panic(err)
+		}
+		n := len(a)        //Find the length of the byte array
+		s := string(a[:n]) //convert to string
+		fmt.Fprint(w, s)   //write to response
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		a, err := json.Marshal(requestResponse{Type: 404, Text: "Package not found !"}) //get json byte array
+		if err != nil {
+			log.Panic(err)
+		}
+		n := len(a)        //Find the length of the byte array
+		s := string(a[:n]) //convert to string
+		fmt.Fprint(w, s)
+	}
 	log.Println("/build/complete/check/" + name)
 
 }

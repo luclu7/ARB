@@ -19,13 +19,13 @@ func main() {
 
 	// Migrate the schema
 	db.AutoMigrate(&pkg{})
-	db.AutoMigrate(&Build{})
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
 	r.HandleFunc("/build/launch/{package}", handlerBuild)
 	r.HandleFunc("/build/complete/mark/{name}", handlerMarkBuildAsFinished)
 	r.HandleFunc("/build/complete/check/{name}", handlerCheckIfBuildFinished)
+	r.HandleFunc("/upload", uploadFile)
 	http.Handle("/", r)
 	fmt.Println("Starting on http://localhost:8081...")
 	http.ListenAndServe(":8081", r)

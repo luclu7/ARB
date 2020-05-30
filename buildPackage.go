@@ -8,7 +8,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/strslice"
 	"github.com/docker/docker/client"
 )
@@ -27,7 +26,7 @@ func buildPackage(packageName string) {
 		panic(err)
 	}
 
-	imageName := "docker.io/maximbaz/arch-build-aur"
+	imageName := "docker.io/luclu7/docker-arch-build-aur:latest"
 
 	out, err := cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
 	if err != nil {
@@ -35,25 +34,19 @@ func buildPackage(packageName string) {
 	}
 	io.Copy(os.Stdout, out)
 
-	sourceFolder := getEnv("HOST_FOLDER", "/home/luclu7")
 	server := getEnv("MAIN_HOST", "localhost")
 
 	var command strslice.StrSlice
 	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName+"; curl "+server+"/build/complete/mark/"+packageName))
 
+	envVars := []string{"MAIN_HOST=10.10.5.42:8081"}
+
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: imageName,
 		Cmd:   command,
+		Env:   envVars,
 	},
-		&container.HostConfig{
-			Mounts: []mount.Mount{
-				{
-					Type:   mount.TypeBind,
-					Source: sourceFolder,
-					Target: "/pkg",
-				},
-			},
-		},
+		nil,
 		nil,
 		"")
 
