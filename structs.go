@@ -16,5 +16,6 @@ type File struct {
 
 type requestResponse struct {
 	Type int
+	UUID string
 	Text string
 }

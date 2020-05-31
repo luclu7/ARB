@@ -19,7 +19,6 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 	if !db.Debug().First(&currentPkg, "Name = ?", name).RecordNotFound() {
 		fmt.Println("pkg: ", currentPkg)
 		if currentPkg.Status == 0 {
-			log.Println("Package", name, "is already being built.")
 			a, err := json.Marshal(requestResponse{Type: 200, Text: "Your package is already being built!"}) //get json byte array
 			if err != nil {
 				log.Panic(err)
@@ -42,7 +41,7 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		UUID := UUIDToString(uuid.New())
-		a, err := json.Marshal(requestResponse{Type: 200, Text: "The build is being launched with the UUID " + UUID}) //get json byte array
+		a, err := json.Marshal(requestResponse{Type: 200, Text: "The build is being launched.", UUID: UUID}) //get json byte array
 		if err != nil {
 			log.Panic(err)
 		}
