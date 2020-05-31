@@ -46,7 +46,9 @@ func buildPackage(packageName string, uuid string, secret string) {
 		Cmd:   command,
 		Env:   envVars,
 	},
-		nil,
+		&container.HostConfig{
+			AutoRemove: true,
+		},
 		nil,
 		"")
 
