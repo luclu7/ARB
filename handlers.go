@@ -64,18 +64,19 @@ func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
 	uuid := r.FormValue("uuid")
 	secret := r.FormValue("secret")
 	var currentPkg pkg
-	db.Debug().First(&currentPkg, "UUID = ?", uuid)
-	if currentPkg.Secret == secret {
-		db.Debug().Model(&currentPkg).Update("Status", 1)
-		log.Println(uuid + "completed (" + currentPkg.Name + ")")
+	if !db.Debug().First(&currentPkg, "UUID = ?", uuid).RecordNotFound() {
+		if currentPkg.Secret == secret {
+			db.Debug().Model(&currentPkg).Update("Status", 1)
+			log.Println(uuid + "completed (" + currentPkg.Name + ")")
 
-		a, err := json.Marshal(requestResponse{Type: 200, Text: "Package was successfully marked as built."}) //get json byte array
-		if err != nil {
-			log.Panic(err)
+			a, err := json.Marshal(requestResponse{Type: 200, Text: "Package was successfully marked as built."}) //get json byte array
+			if err != nil {
+				log.Panic(err)
+			}
+			n := len(a)        //Find the length of the byte array
+			s := string(a[:n]) //convert to string
+			fmt.Fprint(w, s)
 		}
-		n := len(a)        //Find the length of the byte array
-		s := string(a[:n]) //convert to string
-		fmt.Fprint(w, s)
 	} else {
 		a, err := json.Marshal(requestResponse{Type: 403, Text: "You don't have the right token to mark this build as finished."}) //get json byte array
 		if err != nil {

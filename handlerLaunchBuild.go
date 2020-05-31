@@ -41,7 +41,7 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		UUID := UUIDToString(uuid.New())
-		a, err := json.Marshal(requestResponse{Type: 200, Text: "The build is being launched.", UUID: UUID}) //get json byte array
+		a, err := json.Marshal(requestResponse{Type: 200, UUID: UUID, Text: "The build is being launched."})
 		if err != nil {
 			log.Panic(err)
 		}

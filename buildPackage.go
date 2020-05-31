@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/docker/docker/api/types"
@@ -27,12 +26,11 @@ func buildPackage(packageName string, uuid string, secret string) {
 	}
 
 	imageName := "docker.io/luclu7/docker-arch-build-aur:latest"
-
-	out, err := cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
+	// don't care about the output
+	_, err = cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
 	if err != nil {
 		panic(err)
 	}
-	io.Copy(os.Stdout, out)
 
 	server := getEnv("MAIN_HOST", "localhost")
 	s3host := getEnv("S3_HOST", "localhost")
