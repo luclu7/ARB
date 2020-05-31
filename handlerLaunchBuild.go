@@ -7,13 +7,11 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"github.com/thanhpk/randstr"
 )
 
 func handlerBuild(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	name := vars["package"]
+	name := r.FormValue("name")
 	var currentPkg pkg
 	db.First(&currentPkg)
 	if !db.Debug().First(&currentPkg, "Name = ?", name).RecordNotFound() {

@@ -23,7 +23,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
-	r.HandleFunc("/build/launch/{package}", handlerBuild)
+	r.HandleFunc("/build/launch", handlerBuild).Methods("POST")
 	r.HandleFunc("/build/complete", handlerMarkBuildAsFinished).Methods("POST")
 	r.HandleFunc("/build/addURL", handlerRegisterURLs).Methods("POST")
 	r.HandleFunc("/build/getURL/{UUID}", handlerGetURLs)
