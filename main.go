@@ -25,7 +25,6 @@ func main() {
 	r.HandleFunc("/build/launch/{package}", handlerBuild)
 	r.HandleFunc("/build/complete/mark/{name}", handlerMarkBuildAsFinished)
 	r.HandleFunc("/build/complete/check/{name}", handlerCheckIfBuildFinished)
-	r.HandleFunc("/upload", uploadFile)
 	http.Handle("/", r)
 	fmt.Println("Starting on http://0.0.0.0:8081...")
 	http.ListenAndServe(":8081", r)
