@@ -23,7 +23,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
 	r.HandleFunc("/build/launch/{package}", handlerBuild)
-	r.HandleFunc("/build/complete/mark/{name}", handlerMarkBuildAsFinished)
+	r.HandleFunc("/build/complete/mark/{name}", handlerMarkBuildAsFinished).Methods("POST")
 	r.HandleFunc("/build/complete/check/{name}", handlerCheckIfBuildFinished)
 	http.Handle("/", r)
 	fmt.Println("Starting on http://0.0.0.0:8081...")

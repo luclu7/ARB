@@ -10,6 +10,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/strslice"
 	"github.com/docker/docker/client"
+	"github.com/google/uuid"
 )
 
 func getEnv(key, fallback string) string {
@@ -19,7 +20,7 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func buildPackage(packageName string) {
+func buildPackage(packageName string, uuid uuid.UUID) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
