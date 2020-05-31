@@ -31,6 +31,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func handlerRegisterURLs(w http.ResponseWriter, r *http.Request) {
 	uuid := r.FormValue("uuid")
 	url := r.FormValue("url")
+	log.WithFields(log.Fields{
+		"UUID": uuid,
+		"URL":  url,
+	}).Info("URL added")
 
 	db.Create(&File{UUID: uuid, URL: url})
 }
