@@ -77,6 +77,15 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
+
+	urls, ok := r.URL.Query()["urls"]
+
+	if !ok || len(urls[0]) < 1 {
+		log.Println("Url Param 'name' is missing")
+		return
+	}
+	fmt.Println(urls)
+
 	var currentPkg pkg
 	db.Debug().First(&currentPkg, "Name = ?", name)
 	db.Debug().Model(&currentPkg).Update("Status", 1)

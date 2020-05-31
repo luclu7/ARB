@@ -35,12 +35,15 @@ func buildPackage(packageName string) {
 	io.Copy(os.Stdout, out)
 
 	server := getEnv("MAIN_HOST", "localhost")
+	s3host := getEnv("S3_HOST", "localhost")
+	s3bucket := getEnv("S3_BUCKET", "arb")
+	s3region := getEnv("S3_REGION", "us-east-1")
 
 	var command strslice.StrSlice
-	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName+"; curl "+server+"/build/complete/mark/"+packageName))
+	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName))
 
-	envVars := []string{"MAIN_HOST=10.10.5.42:8081"}
-
+	envVars := []string{"MAIN_HOST=" + server, "S3_HOST=" + s3host, "S3_BUCKET=" + s3bucket, "S3_KEY=" + os.Getenv("S3_KEY"), "S3_SECRET=" + os.Getenv("S3_SECRET"), "S3_REGION=" + s3region}
+	fmt.Println(envVars)
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: imageName,
 		Cmd:   command,
