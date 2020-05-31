@@ -31,12 +31,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func handlerRegisterURLs(w http.ResponseWriter, r *http.Request) {
 	uuid := r.FormValue("uuid")
 	url := r.FormValue("url")
-	log.WithFields(log.Fields{
-		"UUID": uuid,
-		"URL":  url,
-	}).Info("URL added")
+	secret := r.FormValue("secret")
+	var read pkg
+	//if !db.First(&read, "UUID =", uuid).Where("Secret =", secret).RecordNotFound {
+	chain := db.Where("UUID = ?", uuid)
+	chain = chain.Where("secret = ?", secret)
+	chain.Find(&read)
 
-	db.Create(&File{UUID: uuid, URL: url})
+	if !chain.Debug().Find(&read).RecordNotFound() {
+		log.WithFields(log.Fields{
+			"UUID": uuid,
+			"URL":  url,
+		}).Info("URL added")
+
+		db.Create(&File{UUID: uuid, URL: url})
+	}
 }
 
 func handlerGetURLs(w http.ResponseWriter, r *http.Request) {

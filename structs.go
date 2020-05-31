@@ -24,3 +24,9 @@ type requestResponse struct {
 type buildRequest struct {
 	PackageName string
 }
+
+type addUrlRequest struct {
+	UUID   string
+	URL    string
+	Secret string
+}
