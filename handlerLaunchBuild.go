@@ -14,7 +14,7 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 	var request buildRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		panic(err)
+		log.Error(err)
 	}
 	name := request.PackageName
 	var currentPkg pkg
