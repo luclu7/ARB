@@ -10,7 +10,6 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/strslice"
 	"github.com/docker/docker/client"
-	"github.com/google/uuid"
 )
 
 func getEnv(key, fallback string) string {
@@ -20,7 +19,7 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func buildPackage(packageName string, uuid uuid.UUID) {
+func buildPackage(packageName string, uuid string) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -43,7 +42,7 @@ func buildPackage(packageName string, uuid uuid.UUID) {
 	var command strslice.StrSlice
 	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName))
 
-	envVars := []string{"MAIN_HOST=" + server, "S3_HOST=" + s3host, "S3_BUCKET=" + s3bucket, "S3_KEY=" + os.Getenv("S3_KEY"), "S3_SECRET=" + os.Getenv("S3_SECRET"), "S3_REGION=" + s3region}
+	envVars := []string{"MAIN_HOST=" + server, "S3_HOST=" + s3host, "S3_BUCKET=" + s3bucket, "S3_KEY=" + os.Getenv("S3_KEY"), "S3_SECRET=" + os.Getenv("S3_SECRET"), "S3_REGION=" + s3region, "UUID=" + uuid}
 	fmt.Println(envVars)
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: imageName,

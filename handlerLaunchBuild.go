@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -33,18 +34,20 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 			n := len(a)        //Find the length of the byte array
 			s := string(a[:n]) //convert to string
 			fmt.Fprint(w, s)
-			go buildPackage(name)
-			db.Create(&pkg{Name: name, Status: 0})
+			UUID := UUIDToString(uuid.New())
+			go buildPackage(name, UUID)
+			db.Create(&pkg{Name: name, Status: 0, UUID: UUID})
 		}
 	} else {
-		a, err := json.Marshal(requestResponse{Type: 200, Text: "Your package is being built!"}) //get json byte array
+		UUID := UUIDToString(uuid.New())
+		a, err := json.Marshal(requestResponse{Type: 200, Text: "The build is being launched with the UUID " + UUID}) //get json byte array
 		if err != nil {
 			log.Panic(err)
 		}
 		n := len(a)        //Find the length of the byte array
 		s := string(a[:n]) //convert to string
 		fmt.Fprint(w, s)
-		go buildPackage(name)
-		db.Create(&pkg{Name: name, Status: 0})
+		go buildPackage(name, UUID)
+		db.Create(&pkg{Name: name, Status: 0, UUID: UUID})
 	}
 }

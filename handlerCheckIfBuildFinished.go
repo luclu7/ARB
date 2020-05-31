@@ -11,9 +11,9 @@ import (
 
 func handlerCheckIfBuildFinished(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	name := vars["name"]
+	UUID := vars["UUID"]
 	var currentPkg pkg
-	if !db.Debug().First(&currentPkg, "Name = ?", name).RecordNotFound() {
+	if !db.Debug().First(&currentPkg, "UUID = ?", UUID).RecordNotFound() {
 
 		a, err := json.Marshal(currentPkg) //get json byte array
 		if err != nil {
@@ -32,6 +32,6 @@ func handlerCheckIfBuildFinished(w http.ResponseWriter, r *http.Request) {
 		s := string(a[:n]) //convert to string
 		fmt.Fprint(w, s)
 	}
-	log.Println("/build/complete/check/" + name)
+	log.Println("/build/complete/check/" + UUID)
 
 }
