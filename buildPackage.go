@@ -19,7 +19,7 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-func buildPackage(packageName string, uuid string) {
+func buildPackage(packageName string, uuid string, secret string) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -42,8 +42,7 @@ func buildPackage(packageName string, uuid string) {
 	var command strslice.StrSlice
 	command = strslice.StrSlice(append([]string{"/bin/bash", "-c"}, "/build-aur "+packageName))
 
-	envVars := []string{"MAIN_HOST=" + server, "S3_HOST=" + s3host, "S3_BUCKET=" + s3bucket, "S3_KEY=" + os.Getenv("S3_KEY"), "S3_SECRET=" + os.Getenv("S3_SECRET"), "S3_REGION=" + s3region, "UUID=" + uuid}
-	fmt.Println(envVars)
+	envVars := []string{"MAIN_HOST=" + server, "S3_HOST=" + s3host, "S3_BUCKET=" + s3bucket, "S3_KEY=" + os.Getenv("S3_KEY"), "S3_SECRET=" + os.Getenv("S3_SECRET"), "S3_REGION=" + s3region, "UUID=" + uuid, "SECRET=" + secret}
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: imageName,
 		Cmd:   command,

@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/thanhpk/randstr"
 )
 
 func handlerBuild(w http.ResponseWriter, r *http.Request) {
@@ -35,8 +36,9 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 			s := string(a[:n]) //convert to string
 			fmt.Fprint(w, s)
 			UUID := UUIDToString(uuid.New())
-			go buildPackage(name, UUID)
-			db.Create(&pkg{Name: name, Status: 0, UUID: UUID})
+			secret := randstr.Hex(16)
+			go buildPackage(name, UUID, secret)
+			db.Create(&pkg{Name: name, Status: 0, UUID: UUID, Secret: secret})
 		}
 	} else {
 		UUID := UUIDToString(uuid.New())
@@ -47,7 +49,8 @@ func handlerBuild(w http.ResponseWriter, r *http.Request) {
 		n := len(a)        //Find the length of the byte array
 		s := string(a[:n]) //convert to string
 		fmt.Fprint(w, s)
-		go buildPackage(name, UUID)
-		db.Create(&pkg{Name: name, Status: 0, UUID: UUID})
+		secret := randstr.Hex(16)
+		go buildPackage(name, UUID, secret)
+		db.Create(&pkg{Name: name, Status: 0, UUID: UUID, Secret: secret})
 	}
 }

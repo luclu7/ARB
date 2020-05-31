@@ -17,24 +17,6 @@ import (
 	Status int    `gorm:"type:int"`
 } */
 
-type pkg struct {
-	ID     int
-	UUID   string `gorm:"type:string"`
-	Name   string
-	Status int
-}
-
-type File struct {
-	ID   int
-	UUID string `gorm:"type:string"`
-	URL  string
-}
-
-type requestResponse struct {
-	Type int
-	Text string
-}
-
 func UUIDToString(UUID uuid.UUID) string {
 	return fmt.Sprintf("%s", UUID)
 }
@@ -80,18 +62,28 @@ func handlerGetURLs(w http.ResponseWriter, r *http.Request) {
 
 func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
 	uuid := r.FormValue("uuid")
-	urls := r.FormValue("urls")
+	secret := r.FormValue("secret")
 	var currentPkg pkg
 	db.Debug().First(&currentPkg, "UUID = ?", uuid)
-	db.Debug().Model(&currentPkg).Update("Status", 1)
-	db.Debug().Model(&currentPkg).Update("URL", urls)
-	log.Println("/build/complete/mark/" + uuid)
+	if currentPkg.Secret == secret {
+		db.Debug().Model(&currentPkg).Update("Status", 1)
+		log.Println(uuid + "completed (" + currentPkg.Name + ")")
 
-	a, err := json.Marshal(requestResponse{Type: 200, Text: "Package was successfully marked as built."}) //get json byte array
-	if err != nil {
-		log.Panic(err)
+		a, err := json.Marshal(requestResponse{Type: 200, Text: "Package was successfully marked as built."}) //get json byte array
+		if err != nil {
+			log.Panic(err)
+		}
+		n := len(a)        //Find the length of the byte array
+		s := string(a[:n]) //convert to string
+		fmt.Fprint(w, s)
+	} else {
+		a, err := json.Marshal(requestResponse{Type: 403, Text: "You don't have the right token to mark this build as finished."}) //get json byte array
+		if err != nil {
+			log.Panic(err)
+		}
+		n := len(a)        //Find the length of the byte array
+		s := string(a[:n]) //convert to string
+		fmt.Fprint(w, s)
+
 	}
-	n := len(a)        //Find the length of the byte array
-	s := string(a[:n]) //convert to string
-	fmt.Fprint(w, s)
 }
