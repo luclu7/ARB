@@ -19,6 +19,7 @@ func main() {
 
 	// Migrate the schema
 	db.AutoMigrate(&pkg{})
+	db.AutoMigrate(&File{})
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
