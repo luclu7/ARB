@@ -17,6 +17,7 @@ import (
 	Status int    `gorm:"type:int"`
 } */
 
+// UUIDToString converts uuid.UUIDs to... strings
 func UUIDToString(UUID uuid.UUID) string {
 	return fmt.Sprintf("%s", UUID)
 }

@@ -8,6 +8,7 @@ type pkg struct {
 	Secret string
 }
 
+// File represents a file uploaded to S3/Minio
 type File struct {
 	ID   int
 	UUID string `gorm:"type:string"`
