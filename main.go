@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -29,6 +29,6 @@ func main() {
 	r.HandleFunc("/build/getURL/{UUID}", handlerGetURLs)
 	r.HandleFunc("/build/check/{UUID}", handlerCheckIfBuildFinished)
 	http.Handle("/", r)
-	fmt.Println("Starting on http://0.0.0.0:8081...")
+	log.Info("Starting on http://0.0.0.0:8081...")
 	http.ListenAndServe(":8081", r)
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,7 +13,7 @@ func handlerCheckIfBuildFinished(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	UUID := vars["UUID"]
 	var currentPkg pkg
-	if !db.Debug().First(&currentPkg, "UUID = ?", UUID).RecordNotFound() {
+	if !db.First(&currentPkg, "UUID = ?", UUID).RecordNotFound() {
 
 		a, err := json.Marshal(currentPkg) //get json byte array
 		if err != nil {
@@ -32,6 +32,8 @@ func handlerCheckIfBuildFinished(w http.ResponseWriter, r *http.Request) {
 		s := string(a[:n]) //convert to string
 		fmt.Fprint(w, s)
 	}
-	log.Println("/build/complete/check/" + UUID)
+	log.WithFields(log.Fields{
+		"UUID": UUID,
+	}).Info("Checked status of a container" + UUID)
 
 }

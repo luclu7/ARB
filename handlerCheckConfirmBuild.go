@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -65,10 +65,13 @@ func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
 	uuid := r.FormValue("uuid")
 	secret := r.FormValue("secret")
 	var currentPkg pkg
-	if !db.Debug().First(&currentPkg, "UUID = ?", uuid).RecordNotFound() {
+	if !db.First(&currentPkg, "UUID = ?", uuid).RecordNotFound() {
 		if currentPkg.Secret == secret {
-			db.Debug().Model(&currentPkg).Update("Status", 1)
-			log.Println(uuid + "completed (" + currentPkg.Name + ")")
+			db.Model(&currentPkg).Update("Status", 1)
+			log.WithFields(log.Fields{
+				"UUID":    uuid,
+				"package": currentPkg.Name,
+			}).Info("Build finished")
 
 			a, err := json.Marshal(requestResponse{Type: 200, Text: "Package was successfully marked as built."}) //get json byte array
 			if err != nil {

@@ -20,3 +20,7 @@ type requestResponse struct {
 	UUID string
 	Text string
 }
+
+type buildRequest struct {
+	PackageName string
+}

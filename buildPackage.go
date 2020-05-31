@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 
 	"github.com/docker/docker/api/types"
@@ -58,5 +58,10 @@ func buildPackage(packageName string, uuid string, secret string) {
 		panic(err)
 	}
 
-	fmt.Println(resp.ID)
+	log.WithFields(log.Fields{
+		"package":   packageName,
+		"UUID":      uuid,
+		"container": resp.ID,
+	}).Info("New container")
+
 }

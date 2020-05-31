@@ -15,6 +15,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/sirupsen/logrus v1.4.1
 	github.com/stretchr/testify v1.6.0 // indirect
 	github.com/thanhpk/randstr v1.0.4
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4 // indirect
