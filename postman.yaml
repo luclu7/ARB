@@ -69,7 +69,24 @@ paths:
           description: "package was successfully launched"
           schema:
             $ref: '#/definitions/pkg'
-
+  /build/complete:
+    post:
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: uuid
+          type: string
+          description: A build's UUID.
+        - in: formData
+          name: secret
+          type: string
+          description: A build's secret.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/requestResponse'
 
 definitions:
   pkg:
@@ -126,4 +143,3 @@ definitions:
       Secret:
         type: string
         example: "21d1ca9d7d9739687cdcd70d845fbd80"
-        
