@@ -29,22 +29,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlerRegisterURLs(w http.ResponseWriter, r *http.Request) {
-	uuid := r.FormValue("uuid")
-	url := r.FormValue("url")
-	secret := r.FormValue("secret")
+	var request addUrlRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		log.Error(err)
+	}
+
 	var read pkg
 	//if !db.First(&read, "UUID =", uuid).Where("Secret =", secret).RecordNotFound {
-	chain := db.Where("UUID = ?", uuid)
-	chain = chain.Where("secret = ?", secret)
+	chain := db.Where("UUID = ?", request.UUID)
+	chain = chain.Where("secret = ?", request.Secret)
 	chain.Find(&read)
 
-	if !chain.Debug().Find(&read).RecordNotFound() {
+	if !chain.Find(&read).RecordNotFound() {
 		log.WithFields(log.Fields{
-			"UUID": uuid,
-			"URL":  url,
+			"UUID": request.UUID,
+			"URL":  request.URL,
 		}).Info("URL added")
 
-		db.Create(&File{UUID: uuid, URL: url})
+		db.Create(&File{UUID: request.UUID, URL: request.URL})
 	}
 }
 
@@ -75,14 +78,14 @@ func handlerGetURLs(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
-	uuid := r.FormValue("uuid")
-	secret := r.FormValue("secret")
+	UUID := r.FormValue("uuid")
+	Secret := r.FormValue("secret")
 	var currentPkg pkg
-	if !db.First(&currentPkg, "UUID = ?", uuid).RecordNotFound() {
-		if currentPkg.Secret == secret {
+	if !db.First(&currentPkg, "UUID = ?", UUID).RecordNotFound() {
+		if currentPkg.Secret == Secret {
 			db.Model(&currentPkg).Update("Status", 1)
 			log.WithFields(log.Fields{
-				"UUID":    uuid,
+				"UUID":    UUID,
 				"package": currentPkg.Name,
 			}).Info("Build finished")
 
