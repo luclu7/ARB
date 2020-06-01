@@ -89,7 +89,7 @@ func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
 				"package": currentPkg.Name,
 			}).Info("Build finished")
 
-			a, err := json.Marshal(requestResponse{Type: 200, Text: "Package was successfully marked as built."}) //get json byte array
+			a, err := json.Marshal(requestResponse{Type: 200, UUID: currentPkg.UUID, Text: "Package was successfully marked as built."}) //get json byte array
 			if err != nil {
 				log.Panic(err)
 			}
@@ -98,7 +98,7 @@ func handlerMarkBuildAsFinished(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, s)
 		}
 	} else {
-		a, err := json.Marshal(requestResponse{Type: 403, Text: "You don't have the right token to mark this build as finished."}) //get json byte array
+		a, err := json.Marshal(requestResponse{Type: 403, UUID: currentPkg.UUID, Text: "You don't have the right token to mark this build as finished."}) //get json byte array
 		if err != nil {
 			log.Panic(err)
 		}
