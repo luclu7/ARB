@@ -52,22 +52,21 @@ paths:
       responses:
         '200':
           description: "URL was successfully added"
-  /build/getURL:
+  /build/getURL/{UUID}:
     get:
       tags:
       - urls
       parameters:
-      - in: body
-        description: Get the status of a build
+      - in: path
+        description: Get the URL of the files uploaded by a build
         name: UUID
+        type: string
         required: true
-        schema:
-          $ref: '#/definitions/buildRequest'
       responses:
         '200':
-          description: "package was successfully launched"
+          description: "URLs array of the different file"
           schema:
-            $ref: '#/definitions/pkg'
+            $ref: '#/definitions/File'
   /build/complete:
     post:
       consumes:
