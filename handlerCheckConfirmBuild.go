@@ -29,7 +29,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlerRegisterURLs(w http.ResponseWriter, r *http.Request) {
-	var request addUrlRequest
+	var request addURLRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		log.Error(err)

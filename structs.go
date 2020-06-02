@@ -25,7 +25,7 @@ type buildRequest struct {
 	PackageName string
 }
 
-type addUrlRequest struct {
+type addURLRequest struct {
 	UUID   string
 	URL    string
 	Secret string
