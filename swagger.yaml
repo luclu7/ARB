@@ -132,7 +132,7 @@ definitions:
     properties:
       PackageName:
         type: string
-  addUrlRequest:
+  addURLRequest:
     properties:
       UUID:
         type: string
