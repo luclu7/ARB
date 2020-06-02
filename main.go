@@ -1,8 +1,10 @@
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
+	"flag"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -21,6 +23,12 @@ func main() {
 	db.AutoMigrate(&pkg{})
 	db.AutoMigrate(&File{})
 
+	// flag for IP:port to listen on
+	var address string
+	flag.StringVar(&address, "listen", "0.0.0.0:8081", "address:port to listen on")
+	flag.Parse()
+
+	// initialize the router
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
 	r.HandleFunc("/build/launch", handlerBuild).Methods("POST")
@@ -29,6 +37,6 @@ func main() {
 	r.HandleFunc("/build/getURL/{UUID}", handlerGetURLs)
 	r.HandleFunc("/build/check/{UUID}", handlerCheckIfBuildFinished)
 	http.Handle("/", r)
-	log.Info("Starting on http://0.0.0.0:8081...")
-	http.ListenAndServe(":8081", r)
+	log.Info("Starting on " + address + "...")
+	log.Fatal(http.ListenAndServe(address, r))
 }
