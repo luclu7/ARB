@@ -46,10 +46,10 @@ paths:
       parameters:
       - in: body
         description: Add a file (with its URL) to the database (secret must be valid)
-        name: addUrlRequest
+        name: addURLRequest
         required: true
         schema:
-          $ref: '#/definitions/addUrlRequest'
+          $ref: '#/definitions/addURLRequest'
       responses:
         '200':
           description: "URL was successfully added"
