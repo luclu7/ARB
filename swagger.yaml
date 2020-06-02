@@ -1,143 +1,159 @@
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  description: "Archlinux Remote Build(ing?), I guess"
-  title: "ARB"
-  version: "1.0.0"
-host: "localhost:8081"
-basePath: "/"
-schemes:
--  "http"
+  title: ARB
+  description: Archlinux Remote Build(ing?), I guess
+  version: 1.0.0
+servers:
+- url: http://localhost:8081/
 tags:
-  - name: urls
+- name: urls
 paths:
   /build/launch:
     post:
-      summary: "Launches the build of a package"
-      parameters:
-      - in: body
+      summary: Launches the build of a package
+      requestBody:
         description: name of the package to build
-        name: package
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/buildRequest'
         required: true
-        schema:
-          $ref: '#/definitions/buildRequest'
       responses:
-        '200':
-          description: "package was successfully launched"
-          schema:
-            $ref: '#/definitions/requestResponse'
+        200:
+          description: package was successfully launched
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/requestResponse'
+      x-codegen-request-body-name: package
   /build/check/{UUID}:
     get:
       parameters:
-      - in: path
+      - name: UUID
+        in: path
         description: Get the status of a build
-        name: UUID
         required: true
-        type: string
+        schema:
+          type: string
       responses:
-        '200':
-          description: "package was successfully launched"
-          schema:
-            $ref: '#/definitions/pkg'
+        200:
+          description: package was successfully launched
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/pkg'
   /build/addURL:
     post:
       tags:
       - urls
-      parameters:
-      - in: body
+      requestBody:
         description: Add a file (with its URL) to the database (secret must be valid)
-        name: addURLRequest
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/addURLRequest'
         required: true
-        schema:
-          $ref: '#/definitions/addURLRequest'
       responses:
-        '200':
-          description: "URL was successfully added"
+        200:
+          description: URL was successfully added
+          content: {}
+      x-codegen-request-body-name: addURLRequest
   /build/getURL/{UUID}:
     get:
       tags:
       - urls
       parameters:
-      - in: path
+      - name: UUID
+        in: path
         description: Get the URL of the files uploaded by a build
-        name: UUID
-        type: string
         required: true
+        schema:
+          type: string
       responses:
-        '200':
-          description: "URLs array of the different file"
-          schema:
-            $ref: '#/definitions/File'
+        200:
+          description: URLs array of the different file
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/File'
   /build/complete:
     post:
-      consumes:
-        - application/x-www-form-urlencoded
-      parameters:
-        - in: formData
-          name: uuid
-          type: string
-          description: A build's UUID.
-        - in: formData
-          name: secret
-          type: string
-          description: A build's secret.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                uuid:
+                  type: string
+                  description: A build's UUID.
+                secret:
+                  type: string
+                  description: A build's secret.
       responses:
         200:
           description: OK
-          schema:
-            $ref: '#/definitions/requestResponse'
-
-definitions:
-  pkg:
-    properties:
-      ID:
-        type: "integer"
-        format: "int64"
-        example: 1
-      UUID:
-        type: "string"
-        format: "string"
-        example: "592ba1a4-63bf-4d17-902b-660e74bc2fc4"
-      Name:
-        type: "string"
-      Status:
-        type: "integer"
-        format: "int64"
-  File:
-    properties:
-      ID:
-        type: "integer"
-        format: "int64"
-        example: 1
-      UUID:
-        type: "string"
-        format: "string"
-        example: "592ba1a4-63bf-4d17-902b-660e74bc2fc4"
-      URL:
-        type: "string"
-  requestResponse:
-    properties:
-      Type:
-        type: "integer"
-        format: "int64"
-        example: 200
-      UUID:
-        type: "string"
-        example: "592ba1a4-63bf-4d17-902b-660e74bc2fc4"
-      Text:
-        type: "string"
-        example: "The build is being launched."
-  buildRequest:
-    properties:
-      PackageName:
-        type: string
-  addURLRequest:
-    properties:
-      UUID:
-        type: string
-        example: "592ba1a4-63bf-4d17-902b-660e74bc2fc4"
-      URL:
-        type: string
-        example: "http://minio.lan/arb/akmey-bin-12fbfb84-8230-445b-9402-6c1eb4dd9a85/akmey-bin-0.6-1-x86_64.pkg.tar.xz"
-      Secret:
-        type: string
-        example: "21d1ca9d7d9739687cdcd70d845fbd80"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/requestResponse'
+components:
+  schemas:
+    pkg:
+      type: object
+      properties:
+        ID:
+          type: integer
+          format: int64
+          example: 1
+        UUID:
+          type: string
+          format: string
+          example: 592ba1a4-63bf-4d17-902b-660e74bc2fc4
+        Name:
+          type: string
+        Status:
+          type: integer
+          format: int64
+    File:
+      type: object
+      properties:
+        ID:
+          type: integer
+          format: int64
+          example: 1
+        UUID:
+          type: string
+          format: string
+          example: 592ba1a4-63bf-4d17-902b-660e74bc2fc4
+        URL:
+          type: string
+    requestResponse:
+      type: object
+      properties:
+        Type:
+          type: integer
+          format: int64
+          example: 200
+        UUID:
+          type: string
+          example: 592ba1a4-63bf-4d17-902b-660e74bc2fc4
+        Text:
+          type: string
+          example: The build is being launched.
+    buildRequest:
+      type: object
+      properties:
+        PackageName:
+          type: string
+    addURLRequest:
+      type: object
+      properties:
+        UUID:
+          type: string
+          example: 592ba1a4-63bf-4d17-902b-660e74bc2fc4
+        URL:
+          type: string
+          example: http://minio.lan/arb/akmey-bin-12fbfb84-8230-445b-9402-6c1eb4dd9a85/akmey-bin-0.6-1-x86_64.pkg.tar.xz
+        Secret:
+          type: string
+          example: 21d1ca9d7d9739687cdcd70d845fbd80
