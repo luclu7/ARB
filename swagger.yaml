@@ -92,7 +92,7 @@ definitions:
       ID:
         type: "integer"
         format: "int64"
-        example: "1"
+        example: 1
       UUID:
         type: "string"
         format: "string"
@@ -107,7 +107,7 @@ definitions:
       ID:
         type: "integer"
         format: "int64"
-        example: "1"
+        example: 1
       UUID:
         type: "string"
         format: "string"
@@ -119,7 +119,7 @@ definitions:
       Type:
         type: "integer"
         format: "int64"
-        example: "200"
+        example: 200
       UUID:
         type: "string"
         example: "592ba1a4-63bf-4d17-902b-660e74bc2fc4"
