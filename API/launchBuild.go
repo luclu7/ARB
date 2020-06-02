@@ -2,7 +2,6 @@ package API
 
 import (
 	"encoding/json"
-	"fmt"
 
 	resty "github.com/go-resty/resty/v2"
 )
@@ -14,7 +13,6 @@ func LaunchBuild(pkg string, server string, client *resty.Client) (RequestRespon
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(string(body))
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Accept", "application/json").
